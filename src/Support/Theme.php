@@ -221,6 +221,7 @@ class Theme
         \LegendDevelopment\Theme\Support\Minecraft\Minecraft::forget();
         \LegendDevelopment\Theme\Support\Games\Ark::forget();
         \LegendDevelopment\Theme\Support\Games\Valheim::forget();
+        \LegendDevelopment\Theme\Support\Access\RoleServers::forget();
     }
 
     /**

@@ -173,6 +173,22 @@ class Features
     public const GAMES = 'games';
 
     /**
+     * Servers tied to a role, kept true in Pelican's own subuser table.
+     *
+     * The one feature here that writes to a table the panel owns, which is why
+     * it says so in its own name and why the settings page says it twice. It
+     * grants nothing until a mapping exists - the list starts empty, exactly
+     * like the status page's does, and an empty list is the whole off switch
+     * for a panel that installs this and changes nothing.
+     *
+     * Switching it off stops the reconciling; it does not take access away.
+     * That is deliberate: an off switch that silently removed a hundred
+     * people's servers would be a worse switch than one that stops. Taking it
+     * back is a button on the page, pressed on purpose.
+     */
+    public const ACCESS = 'access';
+
+    /**
      * Which languages this plugin will answer in.
      *
      * A feature like the rest, and its off state is meaningful rather than
@@ -209,6 +225,7 @@ class Features
         self::PUBLIC_STATUS,
         self::GAME_PLAYERS,
         self::GAMES,
+        self::ACCESS,
         self::LANGUAGES,
     ];
 
@@ -246,6 +263,7 @@ class Features
         self::DUPLICATE => 'duplicate',
         self::MINECRAFT => 'minecraft',
         self::GAMES => 'games',
+        self::ACCESS => 'access',
         self::ARTWORK => 'artwork',
         self::ALERTS => 'alerts',
         self::BACKUPS => 'backups',

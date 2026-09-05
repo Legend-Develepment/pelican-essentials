@@ -150,7 +150,7 @@ if (Get-Command node -ErrorAction SilentlyContinue) {
     # authority: a console command, a parsed network packet, a path handed to
     # deleteFiles. All three were written alongside the code and all three found
     # something the code was getting wrong.
-    foreach ($suite in @('players', 'ping', 'resources', 'sanitise', 'artwork', 'alerts', 'a2s', 'status', 'css', 'ini', 'valheim', 'layouts')) {
+    foreach ($suite in @('players', 'ping', 'resources', 'sanitise', 'artwork', 'alerts', 'a2s', 'status', 'css', 'ini', 'valheim', 'layouts', 'access')) {
         & node (Join-Path $root "tools/$suite.test.js") | Out-Null
         if ($LASTEXITCODE -ne 0) {
             & node (Join-Path $root "tools/$suite.test.js")

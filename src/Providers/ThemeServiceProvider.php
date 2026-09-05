@@ -5,8 +5,10 @@ namespace LegendDevelopment\Theme\Providers;
 use App\Models\Role;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
+use Illuminate\Auth\Events\Login as SignedIn;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\ServiceProvider;
@@ -14,6 +16,8 @@ use LegendDevelopment\Theme\Http\FavouriteController;
 use LegendDevelopment\Theme\Http\LayoutController;
 use LegendDevelopment\Theme\Http\QuickController;
 use LegendDevelopment\Theme\Http\StatusController;
+use LegendDevelopment\Theme\Support\Access\RoleServers;
+use LegendDevelopment\Theme\Support\Access\Sync;
 use LegendDevelopment\Theme\Support\Areas;
 use LegendDevelopment\Theme\Support\Alerts\Schedule as AlertSchedule;
 use LegendDevelopment\Theme\Support\AutoUpdate;
@@ -74,6 +78,13 @@ class ThemeServiceProvider extends ServiceProvider
          * anything to do with whether the theme is painting.
          */
         $this->registerLayoutRoute();
+
+        /*
+         * And this one, also before the return: whether the panel is being
+         * painted has nothing to do with whether somebody's role should have
+         * given them a server.
+         */
+        $this->registerAccessSync();
 
         if (Presets::isDisabled()) {
             return;
@@ -256,8 +267,48 @@ class ThemeServiceProvider extends ServiceProvider
                 // visitor sees is a minute old at worst rather than however
                 // long ago somebody last opened it.
                 AlertSchedule::status($schedule);
+
+                // Servers tied to a role. On the same cron entry as the rest,
+                // and only worth a quarter hour because saving the mapping and
+                // signing in both reconcile on their own - the timer is here
+                // for the third case, somebody being given a role.
+                Sync::schedule($schedule);
             } catch (Throwable) {
                 // Never let a scheduling problem stop artisan from running.
+            }
+        });
+    }
+
+    /**
+     * Reconcile one person's role servers as they sign in.
+     *
+     * The timer catches a role somebody was given an hour ago; this catches the
+     * moment they would notice. It asks about one person rather than about
+     * everybody, so it is a handful of queries rather than a sweep, and it is
+     * wrapped because a sign-in must not fail over this - somebody locked out
+     * of the panel by an access feature would be the worst possible way for
+     * this to go wrong.
+     */
+    private function registerAccessSync(): void
+    {
+        /*
+         * Aliased, and not for neatness: this file already imports a Login -
+         * the plugin's own, for the sign-in screen - and two classes under one
+         * short name is the fault tools/check-classes.js exists to catch.
+         */
+        Event::listen(SignedIn::class, static function (SignedIn $event): void {
+            try {
+                if (!RoleServers::enabled() || RoleServers::rows() === []) {
+                    return;
+                }
+
+                $id = $event->user->getAuthIdentifier();
+
+                if (is_numeric($id)) {
+                    Sync::one((int) $id);
+                }
+            } catch (Throwable $exception) {
+                report($exception);
             }
         });
     }

@@ -2,7 +2,7 @@
     "id": "Essentials",
     "name": "Essentials",
     "author": "Legend Development",
-    "version": "2.70.1-dev",
+    "version": "2.71.1-dev",
     "description": "A community plugin by Legend Development, not affiliated with the Pelican team. It restyles the panel and adds to it. The look: eleven styles or your own, any accent and surface colour, corner rounding, spacing, frosted glass, backgrounds, five layouts, icon weight and size, and custom CSS - with a live preview beside the form and per-area overrides. What it adds: announcements with a schedule, your own sidebar links, a sign-in screen you can dress, a sidebar footer, a dashboard block with every machine, a system status page read from /proc rather than from shell commands, a floating console button, server card styling with starred servers first, a drag-and-drop page arranger each person can keep their own of, a Palworld world-settings editor, a page for duplicating a server several times at once, and settings export and import. Every part has its own on/off switch and its own permission, and switching the styling off leaves the panel exactly as Pelican draws it.",
     "category": "plugin",
     "url": "https://github.com/Legend-Develepment/essentials",
